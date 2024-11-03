@@ -19,8 +19,6 @@ public:
 	SPI_Master_STM32(SPI_HandleTypeDef* hspi, uint32_t timeout);
 	virtual ~SPI_Master_STM32();
 	int32_t init();
-	int32_t take(uint32_t timeout);
-	int32_t give();
 	int32_t transmit(uint8_t* buffer, uint32_t length);
 	int32_t receive(uint8_t* buffer, uint32_t length);
 	int32_t trx(uint8_t* txBuffer, uint8_t* rxBuffer, uint32_t length);

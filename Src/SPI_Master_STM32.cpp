@@ -22,8 +22,8 @@ SPI_Master_STM32::~SPI_Master_STM32() {
 
 int32_t SPI_Master_STM32::init(){
 	// TODO Implement self test routine
-	hSpiMutex = xSemaphoreCreateMutexStatic(&spiMutexBuffer);
-	vQueueAddToRegistry(hSpiMutex, "spiMutex");
+	int32_t errors = 0;
+	errors += SharedResource::init();
 	hSpiEventGroup = xEventGroupCreateStatic(&spiEventGroupBuffer);
 	HAL_SPI_RegisterCallback(hspi, HAL_SPI_TX_COMPLETE_CB_ID, transmitCallbackStatic);
 	HAL_SPI_RegisterCallback(hspi, HAL_SPI_RX_COMPLETE_CB_ID, receiveCallbackStatic);
@@ -53,30 +53,13 @@ int32_t SPI_Master_STM32::init(){
 		objects[4] = this;
 	}
 #endif
-	return 0;
-}
-
-int32_t SPI_Master_STM32::take(uint32_t timeout) {
-	if(xSemaphoreTake(hSpiMutex, timeout)){
-		// Took
-		taskLocking = xTaskGetCurrentTaskHandle();
-		return 0;
-	}else{
-		// Timeout
-		return -1;
-	}
-}
-
-int32_t SPI_Master_STM32::give() {
-	taskLocking = nullptr;
-	xSemaphoreGive(hSpiMutex);
-	return 0;
+	return errors;
 }
 
 int32_t SPI_Master_STM32::transmit(uint8_t *buffer, uint32_t length) {
-	if (taskLocking != xTaskGetCurrentTaskHandle()){
+	if (!taken()){
 		// Not taken
-		return -2;
+		return -1;
 	}
 	HAL_SPI_Transmit_DMA(hspi, buffer, length);
 	EventBits_t bits = xEventGroupWaitBits(hSpiEventGroup, (EventBits_t)Event::TX_CPLT, true, true, timeout);
@@ -88,9 +71,9 @@ int32_t SPI_Master_STM32::transmit(uint8_t *buffer, uint32_t length) {
 }
 
 int32_t SPI_Master_STM32::receive(uint8_t *buffer, uint32_t length) {
-	if (taskLocking != xTaskGetCurrentTaskHandle()){
+	if (!taken()){
 		// Not taken
-		return -2;
+		return -1;
 	}
 	HAL_SPI_Receive_DMA(hspi, buffer, length);
 	EventBits_t bits = xEventGroupWaitBits(hSpiEventGroup, (EventBits_t)Event::RX_CPLT, true, true, timeout);
@@ -102,9 +85,9 @@ int32_t SPI_Master_STM32::receive(uint8_t *buffer, uint32_t length) {
 }
 
 int32_t SPI_Master_STM32::trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint32_t length) {
-	if (taskLocking != xTaskGetCurrentTaskHandle()){
+	if (!taken()){
 		// Not taken
-		return -2;
+		return -1;
 	}
 	HAL_SPI_TransmitReceive_DMA(hspi, txBuffer, rxBuffer, length);
 	EventBits_t bits = xEventGroupWaitBits(hSpiEventGroup, (EventBits_t)Event::TRX_CPLT, true, true, timeout);
