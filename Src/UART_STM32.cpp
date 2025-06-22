@@ -118,7 +118,7 @@ int32_t UART_STM32::init() {
 		objects[9] = this;
 	}
 #endif
-	errors += SharedResource::init();
+	errors += SharedResource::init("UART");
 	eventGroupHandle = xEventGroupCreateStatic(&eventGroupBuffer);
 	errors -= HAL_UART_RegisterCallback(huart, HAL_UART_TX_COMPLETE_CB_ID, txCpltCallbackStatic);
 	errors -= HAL_UART_RegisterCallback(huart, HAL_UART_RX_COMPLETE_CB_ID, rxCpltCallbackStatic);
