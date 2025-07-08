@@ -89,11 +89,11 @@ void GPIO_Pin_STM32::extiDispatch(uint16_t GPIO_Pin){
 	// TODO Protect array with mutex
 	GPIO_Pin_STM32* object = pinObjects[gpioPinToPinNumber(GPIO_Pin)];
 	if(!object){
-		printf("EXTI called for uninitialized GPIO_Pin_STM32 %u/n", gpioPinToPinNumber(GPIO_Pin));
+		printf("EXTI called for uninitialized GPIO_Pin_STM32 %u\n", gpioPinToPinNumber(GPIO_Pin));
 		return;
 	}
 	if(!object->irqObject){
-		printf("EXTI called for GPIO_Pin_STM32 %u without callback registered/n", object->pinNumber);
+		printf("EXTI called for GPIO_Pin_STM32 %u without callback registered\n", object->pinNumber);
 		return;
 	}
 	object->irqObject->irqHandler(object);
