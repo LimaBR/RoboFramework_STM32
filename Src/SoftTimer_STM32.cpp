@@ -74,10 +74,10 @@ int32_t SoftTimer_STM32::setName(const char *name) {
 
 void SoftTimer_STM32::timerCalback(TimerHandle_t xTimer) {
 	SoftTimer_STM32* object = static_cast<SoftTimer_STM32*>(pvTimerGetTimerID(xTimer));
-	if(!object->irqObject){
-		printf("SoftTimer: %p expired with null object\n", object);
-		return;
+	if(object->irqObject){
+		object->irqObject->irqHandler(object);
+	}else{
+		//printf("SoftTimer: %p expired with null object\n", object);
 	}
-	object->irqObject->irqHandler(object);
 	xEventGroupSetBits(object->hEventGroup, 1<<0);
 }
