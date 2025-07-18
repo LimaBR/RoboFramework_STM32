@@ -127,7 +127,7 @@ int32_t UART_STM32::init() {
 	return errors;
 }
 
-int32_t UART_STM32::transmit(uint8_t* buffer, uint32_t size) {
+int32_t UART_STM32::transmit(const uint8_t* buffer, uint32_t size) {
 	if(!taken()){
 		// Mutex not locked
 		return -1;

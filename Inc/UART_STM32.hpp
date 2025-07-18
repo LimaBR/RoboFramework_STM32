@@ -18,7 +18,7 @@ public:
 	UART_STM32(UART_HandleTypeDef* huart);
 	virtual ~UART_STM32();
 	int32_t init();
-	int32_t transmit(uint8_t* buffer, uint32_t size);
+	int32_t transmit(const uint8_t* buffer, uint32_t size);
 	int32_t receiveUntilLineIdle(uint8_t* buffer, uint32_t maxSize);
 private:
 	enum class Event : uint32_t{
