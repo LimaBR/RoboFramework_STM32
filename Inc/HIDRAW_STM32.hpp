@@ -18,8 +18,10 @@ public:
 	virtual ~HIDRAW_STM32();
 	static HIDRAW_STM32* getInstance();
 	int32_t init();
-	int32_t enqueueInPacket(uint8_t* buffer, uint32_t size);
+	int32_t enqueueInPacket(const uint8_t* buffer, uint32_t size);
 	int32_t receiveOutPacket(uint8_t* buffer, uint32_t maxSize);
+private:
+	uint8_t pktBuffer[64];
 };
 
 #endif /* SHARED_ROBOFRAMEWORK_STM32_SRC_HIDRAW_STM32_HPP_ */
